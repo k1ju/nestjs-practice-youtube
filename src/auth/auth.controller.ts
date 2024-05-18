@@ -1,5 +1,5 @@
 import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
-import { AuthCredentialDto } from './dto/AuthCredentialDto';
+import { LoginDto } from './dto/LoginDto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -8,7 +8,7 @@ export class AuthController {
 
   //로그인
   @Post()
-  signIn(@Body(ValidationPipe) authCredentialDto: AuthCredentialDto) {
-    return this.authService.signIn(authCredentialDto);
+  signIn(@Body(ValidationPipe) loginDto: LoginDto) {
+    return this.authService.signIn(loginDto);
   }
 }

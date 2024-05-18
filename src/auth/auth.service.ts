@@ -1,19 +1,28 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthCredentialDto } from './dto/AuthCredentialDto';
-import { PrismaClient } from '@prisma/client';
+import { LoginDto } from './dto/LoginDto';
+import { Prisma } from 'src/prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import { ChannelEntity } from 'src/channel/ChannelEntity';
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
-  async signIn(authCredentialDto: AuthCredentialDto) {
-    const { id, pw } = authCredentialDto;
-    const channel = await prisma.channel.findFirst({
-      where: { id: id, pw: pw },
+  constructor(
+    private readonly prisma: Prisma,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async signIn(loginDto: LoginDto): Promise<{ accessToken: string }> {
+    const channel: ChannelEntity = await this.prisma.channel.findFirst({
+      where: { id: loginDto.id },
     });
 
-    if (channel) {
-      console.log('channel: ', channel);
-    } else {
+    if (!channel) throw new UnauthorizedException('login failed');
+    if (!(await bcrypt.compare(loginDto.pw, channel.pw)))
       throw new UnauthorizedException('login failed');
-    }
+
+    const accessToken = await this.jwtService.sign({ idx: channel.idx });
+    return { accessToken: accessToken };
   }
 }
