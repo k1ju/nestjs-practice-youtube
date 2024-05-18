@@ -16,16 +16,18 @@ model channel {
   profileImg  String?     @db.VarChar @map("profile_img")
   createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt   DateTime?   @map("deleted_at") @db.Timestamptz(6)
-  provider    subscribe[] @relation("subscribe_providerTochannel")
-  subscriber  subscribe[] @relation("subscribe_subscriberTochannel")
-  video       video[]
+
+  Provider    subscribe[] @relation("subscribe_providerTochannel")
+  Subscriber  subscribe[] @relation("subscribe_subscriberTochannel")
+  Video       video[]
 }
 
 model subscribe {
   subscriber        Int
   provider          Int
-  channelProvider   channel @relation("subscribe_providerTochannel", fields: [provider], references: [idx], onDelete: NoAction, onUpdate: NoAction)
-  channelSubscriber channel @relation("subscribe_subscriberTochannel", fields: [subscriber], references: [idx], onDelete: NoAction, onUpdate: NoAction)
+
+  Provider   channel @relation("subscribe_providerTochannel", fields: [provider], references: [idx], onDelete: NoAction, onUpdate: NoAction)
+  Subscriber channel @relation("subscribe_subscriberTochannel", fields: [subscriber], references: [idx], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([subscriber, provider], map: "subscribe_pk")
 }
@@ -38,5 +40,6 @@ model video {
   thumbnailImg  String?   @db.VarChar @map("thumbnail_img")
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt     DateTime? @map("deleted_at") @db.Timestamptz(6)
-  channel       channel   @relation(fields: [channelIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "video_channel_fkey")
+
+  Channel       channel   @relation(fields: [channelIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "video_channel_fkey")
 }
