@@ -14,15 +14,19 @@ export class AuthService {
   ) {}
 
   async signIn(loginDto: LoginDto): Promise<{ accessToken: string }> {
-    const channel: ChannelEntity = await this.prisma.channel.findFirst({
+    const channel = await this.prisma.channel.findFirst({
       where: { id: loginDto.id },
     });
 
-    if (!channel) throw new UnauthorizedException('login failed');
-    if (!(await bcrypt.compare(loginDto.pw, channel.pw)))
+    if (!channel) {
       throw new UnauthorizedException('login failed');
+    }
 
-    const accessToken = await this.jwtService.sign({ idx: channel.idx });
+    if (!(await bcrypt.compare(loginDto.pw, channel.pw))) {
+      throw new UnauthorizedException('login failed');
+    }
+
+    const accessToken = this.jwtService.sign({ idx: channel.idx });
     return { accessToken: accessToken };
   }
 }
