@@ -3,6 +3,7 @@ import { SignUpDto } from './dto/SignUpDto';
 import { Prisma } from 'src/prisma/prisma.service';
 import { ChannelEntity } from './ChannelEntity';
 import * as bcrypt from 'bcryptjs';
+import { LoginUser } from 'src/auth/model/login-user.model';
 
 @Injectable()
 export class ChannelService {
@@ -14,6 +15,13 @@ export class ChannelService {
 
     await this.prisma.channel.create({
       data: { id: signUpDto.id, pw: hashedPassword, name: signUpDto.name },
+    });
+  }
+
+  async getMyInfo(loginUser: LoginUser): Promise<ChannelEntity> {
+    console.log(loginUser);
+    return await this.prisma.channel.findUnique({
+      where: { idx: loginUser.idx },
     });
   }
 
