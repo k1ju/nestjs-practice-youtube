@@ -1,13 +1,16 @@
 export class ChannelEntity {
   public idx: number;
-  public pw: string;
   public name: string;
   public description: string;
   public profileImg: string;
   public createdAt: Date;
 
   constructor(data: ChannelEntity) {
-    Object.assign(this, data);
+    this.idx = data.idx;
+    this.name = data.name;
+    this.description = data.description;
+    this.profileImg = data.profileImg;
+    this.createdAt = data.createdAt;
   }
 }
 

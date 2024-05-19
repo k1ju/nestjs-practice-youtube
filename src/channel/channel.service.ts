@@ -4,6 +4,7 @@ import { Prisma } from 'src/prisma/prisma.service';
 import { ChannelEntity } from './ChannelEntity';
 import * as bcrypt from 'bcryptjs';
 import { LoginUser } from 'src/auth/model/login-user.model';
+import { channel } from 'diagnostics_channel';
 
 @Injectable()
 export class ChannelService {
@@ -19,10 +20,11 @@ export class ChannelService {
   }
 
   async getMyInfo(loginUser: LoginUser): Promise<ChannelEntity> {
-    console.log(loginUser);
-    return await this.prisma.channel.findUnique({
+    const channelData = await this.prisma.channel.findUnique({
       where: { idx: loginUser.idx },
     });
+
+    return new ChannelEntity(channelData);
   }
 
   getChannelCount: () => Promise<number>;
@@ -34,8 +36,4 @@ export class ChannelService {
   updateChannelByIdx: (idx: number, profileImgPath: string) => Promise<void>;
 }
 
-// Prisma에서 만들어주는 Model 타입은 Channel Video Suscribe
-// 내가 직접 만들 엔티티 타입은 ChannelEntity
-
-// 1. Prisma를 위한 Entity를 만들지 아니면 구조적 타이핑을 할지
 // 2. Service 타입 정의를 먼저하면 좋다.

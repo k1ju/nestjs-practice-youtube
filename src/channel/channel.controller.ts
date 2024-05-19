@@ -28,9 +28,8 @@ export class ChannelController {
 
   @Get()
   @UseGuards(AuthGuard)
-  getMyInfo(@GetUser() loginUser: LoginUser) {
-    console.log('api실행');
-    return this.channelService.getMyInfo(loginUser);
+  async getMyInfo(@GetUser() loginUser: LoginUser) {
+    return await this.channelService.getMyInfo(loginUser);
   }
 
   @Get('/all')
