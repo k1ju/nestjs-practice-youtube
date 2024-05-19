@@ -5,6 +5,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
+import { ChannelModule } from 'src/channel/channel.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import jwtConfig from './config/jwt.config';
     JwtModule.register({
       secret: 'stageus123',
     }),
+    ChannelModule,
   ],
   // 모듈 등록할 때 ConfigModule을 등록하여 환경변수 값을 사용하기
   controllers: [AuthController],

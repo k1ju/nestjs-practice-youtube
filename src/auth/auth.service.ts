@@ -22,7 +22,7 @@ export class AuthService {
     if (!(await bcrypt.compare(loginDto.pw, channel.pw)))
       throw new UnauthorizedException('login failed');
 
-    const accessToken = await this.jwtService.sign({ idx: channel.idx });
+    const accessToken = this.jwtService.sign({ idx: channel.idx });
     return { accessToken: accessToken };
   }
 }
