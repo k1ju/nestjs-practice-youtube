@@ -35,7 +35,7 @@ export class VideoController {
     @UploadedFile() file?: Express.Multer.File,
   ): Promise<VideoEntity> {
     if (!file) {
-      throw new BadRequestException('no image file');
+      throw new BadRequestException('No image file');
     }
 
     return this.videoService.createVideo(loginUser.idx, createVideoDto, file);

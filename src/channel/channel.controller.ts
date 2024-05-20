@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -50,6 +51,9 @@ export class ChannelController {
     @GetUser() loginUser: LoginUser,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ profileImg: string }> {
+    if (!file) {
+      throw new BadRequestException('No image file');
+    }
     return this.channelService.updateMyProfileImg(loginUser.idx, file);
   }
 
