@@ -25,7 +25,7 @@ export class VideoService {
     return new VideoEntity(videoData);
   }
 
-  async getVideoAll(channelIdx: number): Promise<VideoEntity[]> {
+  async getVideoAll(channelIdx?: number): Promise<VideoEntity[]> {
     const videoData = await this.prisma.video.findMany({
       where: { channelIdx: channelIdx },
     });
