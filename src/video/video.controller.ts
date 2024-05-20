@@ -21,6 +21,7 @@ import { multerOptions } from 'src/configs/multerOption';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { LoginUser } from 'src/auth/model/login-user.model';
 import { VideoEntity } from './VideoEntity';
+import { VideoPagerbleDto } from './dto/VideoPagerbleDto';
 
 @Controller('video')
 export class VideoController {
@@ -28,7 +29,6 @@ export class VideoController {
 
   @Post()
   @UseGuards(AuthGuard)
-  @UsePipes(ValidationPipe)
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async createVideo(
     @GetUser() loginUser: LoginUser,
@@ -49,9 +49,9 @@ export class VideoController {
   @Get('/all')
   @UseGuards(AuthGuard)
   async getVideoAll(
-    @Query('channel', ParseIntPipe) channelIdx: number,
+    @Query() pagerble: VideoPagerbleDto,
   ): Promise<VideoEntity[]> {
-    return await this.videoService.getVideoAll(channelIdx);
+    return await this.videoService.getVideoAll(pagerble.channel);
   }
 
   @Get(':videoIdx')
