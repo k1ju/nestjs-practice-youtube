@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsString, IsStrongPassword, Length } from 'class-validator';
 
 export class LoginDto {
   @IsString()
@@ -7,5 +7,8 @@ export class LoginDto {
 
   @IsString()
   @Length(8, 20)
+  @IsStrongPassword({
+    minLength: 8,
+  })
   pw: string;
 }
