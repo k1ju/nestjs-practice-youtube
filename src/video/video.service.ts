@@ -18,7 +18,7 @@ export class VideoService {
         channelIdx: channelIdx,
         title: createVideoDto.title,
         content: createVideoDto.content,
-        thumbnailImg: file.path,
+        thumbnailImg: file.filename,
       },
     });
 

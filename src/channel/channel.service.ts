@@ -41,7 +41,7 @@ export class ChannelService {
     const channel = await this.prisma.channel.update({
       where: { idx: userIdx },
       data: {
-        profileImg: file.path,
+        profileImg: file.filename,
       },
     });
 
