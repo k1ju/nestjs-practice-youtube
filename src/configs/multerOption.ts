@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { existsSync, mkdirSync } from 'fs';
 import { diskStorage } from 'multer';
-import path, { extname } from 'path';
+import * as path from 'path';
 
 export const multerOptions = {
   fileFilter: (req, file, cb) => {
@@ -24,7 +24,7 @@ export const multerOptions = {
     },
     filename: (req, file, cb) => {
       const filename = Date.now();
-      cb(null, `${filename}${extname(file.originalname)}`);
+      cb(null, `${filename}${path.extname(file.originalname)}`);
     },
   }),
 };
