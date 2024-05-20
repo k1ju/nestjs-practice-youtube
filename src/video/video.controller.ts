@@ -49,7 +49,7 @@ export class VideoController {
   @Get('/all')
   @UseGuards(AuthGuard)
   async getVideoAll(
-    @Query('channelidx', ParseIntPipe) channelIdx: number,
+    @Query('channel', ParseIntPipe) channelIdx: number,
   ): Promise<VideoEntity[]> {
     return await this.videoService.getVideoAll(channelIdx);
   }
