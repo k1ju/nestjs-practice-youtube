@@ -61,10 +61,10 @@ export class ChannelService {
     });
   }
 
-  async getMySubscribeAll(userIdx: number): Promise<any> {
+  async getSubscribeAll(channelIdx: number): Promise<ChannelEntity[]> {
     const providerList = await this.prisma.subscribe.findMany({
       where: {
-        subscriber: userIdx,
+        subscriber: channelIdx,
       },
     });
 
@@ -79,11 +79,17 @@ export class ChannelService {
     return channelList.map((elem) => new ChannelEntity(elem));
   }
 
+  async getChannelByIdx(channelIdx: number): Promise<ChannelEntity> {
+    const channelData = await this.prisma.channel.findUnique({
+      where: { idx: channelIdx },
+    });
+
+    return new ChannelEntity(channelData);
+  }
+
   getChannelCount: () => Promise<number>;
 
   getChannelAll: (page: number) => Promise<ChannelEntity[]>;
-
-  getChannelByIdx: (idx: number) => Promise<ChannelEntity>;
 
   updateChannelByIdx: (idx: number, profileImgPath: string) => Promise<void>;
 }
