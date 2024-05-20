@@ -93,8 +93,21 @@ export class ChannelController {
   @Get(':channelIdx')
   @UseGuards(AuthGuard)
   async getChannelInfo(
+    @GetUser() loginUser: LoginUser,
     @Param('channelIdx', ParseIntPipe) channelIdx: number,
-  ): Promise<ChannelEntity> {
-    return await this.channelService.getChannelByIdx(channelIdx);
+  ): Promise<{
+    channel: ChannelEntity;
+    subscribe: boolean;
+  }> {
+    const subscribeState = await this.channelService.getSubscrbeState(
+      loginUser.idx,
+      channelIdx,
+    );
+    const channel = await this.channelService.getChannelByIdx(channelIdx);
+
+    return {
+      channel,
+      subscribe: subscribeState,
+    };
   }
 }

@@ -88,4 +88,24 @@ export class ChannelService {
 
     return new ChannelEntity(channelData);
   }
+
+  async getSubscrbeState(
+    subscriberIdx: number,
+    providerIdx: number,
+  ): Promise<boolean> {
+    const subscribeState = await this.prisma.subscribe.findUnique({
+      where: {
+        subscriber_provider: {
+          subscriber: subscriberIdx,
+          provider: providerIdx,
+        },
+      },
+    });
+
+    if (!subscribeState) {
+      return false;
+    }
+
+    return true;
+  }
 }
