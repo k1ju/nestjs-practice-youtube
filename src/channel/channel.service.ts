@@ -55,16 +55,19 @@ export class ChannelService {
     });
   }
 
-  async deleteSubscribe(userIdx: number, channelIdx: number): Promise<void> {
+  async deleteSubscribeByIdx(
+    userIdx: number,
+    channelIdx: number,
+  ): Promise<void> {
     await this.prisma.subscribe.deleteMany({
       where: { subscriber: userIdx, provider: channelIdx },
     });
   }
 
-  async getMySubscribeAll(userIdx: number): Promise<any> {
+  async getSubscribeAll(channelIdx: number): Promise<ChannelEntity[]> {
     const providerList = await this.prisma.subscribe.findMany({
       where: {
-        subscriber: userIdx,
+        subscriber: channelIdx,
       },
     });
 
@@ -79,13 +82,11 @@ export class ChannelService {
     return channelList.map((elem) => new ChannelEntity(elem));
   }
 
-  getChannelCount: () => Promise<number>;
+  async getChannelByIdx(channelIdx: number): Promise<ChannelEntity> {
+    const channelData = await this.prisma.channel.findUnique({
+      where: { idx: channelIdx },
+    });
 
-  getChannelAll: (page: number) => Promise<ChannelEntity[]>;
-
-  getChannelByIdx: (idx: number) => Promise<ChannelEntity>;
-
-  updateChannelByIdx: (idx: number, profileImgPath: string) => Promise<void>;
+    return new ChannelEntity(channelData);
+  }
 }
-
-// 2. Service 타입 정의를 먼저하면 좋다.

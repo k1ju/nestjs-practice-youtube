@@ -1,15 +1,19 @@
-import { IsNotEmpty, isNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, Length } from 'class-validator';
 
 export class CreateVideoDto {
-  @IsNotEmpty()
-  channel_idx: number;
+  // @IsNotEmpty()
+  // @IsInt()
+  // channelIdx: number;
 
   @IsNotEmpty()
+  @Length(2, 20)
   title: string;
 
   @IsNotEmpty()
+  @Length(2, 2000)
   content: string;
 
-  @IsNotEmpty()
-  thumbnail_img: string;
+  // @IsNotEmpty()
+  // @Length(2, 200)
+  // thumbnailImg: string;
 }
