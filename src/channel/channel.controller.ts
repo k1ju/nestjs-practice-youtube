@@ -31,15 +31,15 @@ export class ChannelController {
 
   //회원가입
   @Post()
-  signUp(@Body(ValidationPipe) signUpDto: SignUpDto) {
-    return this.channelService.signUp(signUpDto);
+  async signUp(@Body(ValidationPipe) signUpDto: SignUpDto) {
+    return await this.channelService.signUp(signUpDto);
   }
 
   //내정보보기
   @Get()
   @UseGuards(AuthGuard)
-  getMyInfo(@GetUser() loginUser: LoginUser) {
-    return this.channelService.getMyInfo(loginUser);
+  async getMyInfo(@GetUser() loginUser: LoginUser) {
+    return await this.channelService.getMyInfo(loginUser);
   }
 
   //프로필이미지 수정하기
@@ -47,49 +47,54 @@ export class ChannelController {
   @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  updateMyProfileImg(
+  async updateMyProfileImg(
     @GetUser() loginUser: LoginUser,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ profileImg: string }> {
     if (!file) {
       throw new BadRequestException('No image file');
     }
-    return this.channelService.updateMyProfileImg(loginUser.idx, file);
+    return await this.channelService.updateMyProfileImg(loginUser.idx, file);
   }
 
   //구독하기
   @Post(':channelIdx/subscribe')
   @UseGuards(AuthGuard)
-  createSubscribe(
+  async createSubscribe(
     @GetUser() loginUser: LoginUser,
     @Param('channelIdx', ParseIntPipe) channelIdx: number,
   ): Promise<void> {
-    return this.channelService.createSubscribe(loginUser.idx, channelIdx);
+    return await this.channelService.createSubscribe(loginUser.idx, channelIdx);
   }
 
   //구독취소하기
   @Delete(':channelIdx/subscribe')
   @UseGuards(AuthGuard)
-  deleteSubscribe(
+  async deleteSubscribe(
     @GetUser() loginUser: LoginUser,
     @Param('channelIdx', ParseIntPipe) channelIdx: number,
   ): Promise<void> {
-    return this.channelService.deleteSubscribe(loginUser.idx, channelIdx);
+    return await this.channelService.deleteSubscribeByIdx(
+      loginUser.idx,
+      channelIdx,
+    );
   }
 
   //내구독목록 보기
   @Get(':channelIdx/subscribe/all')
   @UseGuards(AuthGuard)
-  getMySubscribeAll(@GetUser() loginUser: LoginUser): Promise<ChannelEntity[]> {
-    return this.channelService.getSubscribeAll(loginUser.idx);
+  async getMySubscribeAll(
+    @GetUser() loginUser: LoginUser,
+  ): Promise<ChannelEntity[]> {
+    return await this.channelService.getSubscribeAll(loginUser.idx);
   }
 
   //채널상세보기
   @Get(':channelIdx')
   @UseGuards(AuthGuard)
-  getChannelInfo(
+  async getChannelInfo(
     @Param('channelIdx', ParseIntPipe) channelIdx: number,
   ): Promise<ChannelEntity> {
-    return this.channelService.getChannelByIdx(channelIdx);
+    return await this.channelService.getChannelByIdx(channelIdx);
   }
 }

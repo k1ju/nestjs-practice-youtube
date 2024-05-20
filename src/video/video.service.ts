@@ -33,5 +33,11 @@ export class VideoService {
     return videoData.map((elem) => new VideoEntity(elem));
   }
 
-  //   async getVideoByIdx(videoIdx: number): Promise<VideoEntity> {}
+  async getVideoByIdx(videoIdx: number): Promise<VideoEntity> {
+    const videoData = await this.prisma.video.findUnique({
+      where: { idx: videoIdx },
+    });
+
+    return new VideoEntity(videoData);
+  }
 }

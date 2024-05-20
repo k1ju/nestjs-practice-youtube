@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   ParseIntPipe,
   Post,
   Query,
@@ -29,7 +30,7 @@ export class VideoController {
   @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  createVideo(
+  async createVideo(
     @GetUser() loginUser: LoginUser,
     @Body() createVideoDto: CreateVideoDto,
     @UploadedFile() file?: Express.Multer.File,
@@ -38,14 +39,25 @@ export class VideoController {
       throw new BadRequestException('No image file');
     }
 
-    return this.videoService.createVideo(loginUser.idx, createVideoDto, file);
+    return await this.videoService.createVideo(
+      loginUser.idx,
+      createVideoDto,
+      file,
+    );
   }
 
   @Get('/all')
   @UseGuards(AuthGuard)
-  getVideoAll(
+  async getVideoAll(
     @Query('channelidx', ParseIntPipe) channelIdx: number,
   ): Promise<VideoEntity[]> {
-    return this.videoService.getVideoAll(channelIdx);
+    return await this.videoService.getVideoAll(channelIdx);
+  }
+
+  @Get(':videoIdx')
+  async getVideoByIdx(
+    @Param('videoIdx', ParseIntPipe) videoIdx: number,
+  ): Promise<VideoEntity> {
+    return await this.videoService.getVideoByIdx(videoIdx);
   }
 }
