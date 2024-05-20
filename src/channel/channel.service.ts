@@ -4,7 +4,6 @@ import { Prisma } from 'src/prisma/prisma.service';
 import { ChannelEntity } from './ChannelEntity';
 import * as bcrypt from 'bcryptjs';
 import { LoginUser } from 'src/auth/model/login-user.model';
-import { UpdateMyProfileImgDto } from './dto/updateMyProfileImgDto';
 
 @Injectable()
 export class ChannelService {
