@@ -31,7 +31,9 @@ export class ChannelController {
 
   //회원가입
   @Post()
-  async signUp(@Body(ValidationPipe) signUpDto: SignUpDto) {
+  async signUp(
+    @Body(ValidationPipe) signUpDto: SignUpDto,
+  ): Promise<ChannelEntity> {
     return await this.channelService.signUp(signUpDto);
   }
 

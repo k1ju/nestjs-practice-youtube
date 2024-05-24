@@ -1,15 +1,15 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { SignUpDto } from './dto/SignUpDto';
-import { Prisma } from 'src/prisma/prisma.service';
+import { Prisma } from '../prisma/prisma.service';
 import { ChannelEntity } from './ChannelEntity';
 import * as bcrypt from 'bcryptjs';
-import { LoginUser } from 'src/auth/model/login-user.model';
+import { LoginUser } from '../auth/model/login-user.model';
 
 @Injectable()
 export class ChannelService {
   constructor(private readonly prisma: Prisma) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<void> {
+  async signUp(signUpDto: SignUpDto): Promise<ChannelEntity> {
     const idDuplicatedChannel = await this.prisma.channel.findMany({
       where: { id: signUpDto.id },
     });
@@ -18,12 +18,13 @@ export class ChannelService {
       throw new ConflictException('id duplicated');
     }
 
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(signUpDto.pw, salt);
+    const hashedPassword = await bcrypt.hash(signUpDto.pw, 15);
 
-    await this.prisma.channel.create({
+    const channelData = await this.prisma.channel.create({
       data: { id: signUpDto.id, pw: hashedPassword, name: signUpDto.name },
     });
+
+    return new ChannelEntity(channelData);
   }
 
   async getMyInfo(loginUser: LoginUser): Promise<ChannelEntity> {
