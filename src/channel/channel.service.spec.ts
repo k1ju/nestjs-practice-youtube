@@ -73,4 +73,39 @@ describe('channelService', () => {
     });
     expect(findMock).toHaveBeenCalledTimes(1);
   });
+
+  it('change profile-img test', async () => {
+    const userIdx = 1;
+    const file = { filename: 'testImg.png' } as Express.Multer.File;
+
+    jest.spyOn(channelService, 'getChannelByIdx').mockResolvedValue({
+      idx: 1,
+      name: 'name',
+      description: null,
+      profileImg: '1716621275302.png',
+      createdAt: new Date('2024-05-19 12:16:01'),
+    });
+
+    jest.spyOn(prisma.channel, 'update').mockResolvedValue({
+      idx: 1,
+      id: 'aaa4',
+      pw: '$2a$10$VGvLOgH1YQJ6sAyI/FGDI.UyPsG9VlarLus0fYChtrnb0fei8CHSC',
+      name: 'name',
+      description: null,
+      profileImg: file.filename,
+      createdAt: new Date('2024-05-19 12:16:01'),
+      deletedAt: null,
+    });
+
+    await expect(
+      channelService.updateMyProfileImg(userIdx, file),
+    ).resolves.toEqual({
+      profileImg: 'testImg.png',
+    });
+    expect(prisma.channel.update).toHaveBeenCalledWith({
+      where: { idx: userIdx },
+      data: { profileImg: file.filename },
+    });
+    expect(channelService.getChannelByIdx).toHaveBeenCalledWith(userIdx);
+  });
 });
