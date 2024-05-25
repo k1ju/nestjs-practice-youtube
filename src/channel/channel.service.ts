@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SignUpDto } from './dto/SignUpDto';
 import { Prisma } from '../prisma/prisma.service';
 import { ChannelEntity } from './ChannelEntity';
@@ -27,26 +31,24 @@ export class ChannelService {
     return new ChannelEntity(channelData);
   }
 
-  async getMyInfo(loginUser: LoginUser): Promise<ChannelEntity> {
-    const channelData = await this.prisma.channel.findUnique({
-      where: { idx: loginUser.idx },
-    });
-
-    return new ChannelEntity(channelData);
-  }
-
   async updateMyProfileImg(
     userIdx: number,
     file: Express.Multer.File,
   ): Promise<{ profileImg: string }> {
-    const channel = await this.prisma.channel.update({
+    let channel = await this.getChannelByIdx(userIdx);
+
+    if (!channel) {
+      throw new NotFoundException('Not Found ProfileImg');
+    }
+
+    const channelData = await this.prisma.channel.update({
       where: { idx: userIdx },
       data: {
         profileImg: file.filename,
       },
     });
 
-    return { profileImg: channel.profileImg };
+    return { profileImg: channelData.profileImg };
   }
 
   async createSubscribe(userIdx: number, channelIdx: number): Promise<void> {
@@ -86,6 +88,12 @@ export class ChannelService {
     const channelData = await this.prisma.channel.findUnique({
       where: { idx: channelIdx },
     });
+
+    if (!channelData) {
+      throw new NotFoundException('Not Found Video');
+    }
+
+    console.log(new ChannelEntity(channelData));
 
     return new ChannelEntity(channelData);
   }

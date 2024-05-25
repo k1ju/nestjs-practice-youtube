@@ -13,5 +13,3 @@ export class ChannelEntity {
     this.createdAt = data.createdAt;
   }
 }
-
-// Model에 대한 타입을 ORM이 만들어주냐 안 만들어주냐
