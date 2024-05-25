@@ -41,7 +41,7 @@ export class ChannelController {
   @Get()
   @UseGuards(AuthGuard)
   async getMyInfo(@GetUser() loginUser: LoginUser) {
-    return await this.channelService.getMyInfo(loginUser);
+    return await this.channelService.getChannelByIdx(loginUser.idx);
   }
 
   //프로필이미지 수정하기

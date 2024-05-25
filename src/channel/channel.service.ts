@@ -31,20 +31,6 @@ export class ChannelService {
     return new ChannelEntity(channelData);
   }
 
-  async getMyInfo(loginUser: LoginUser): Promise<ChannelEntity> {
-    let channel = await this.getChannelByIdx(loginUser.idx);
-
-    if (!channel) {
-      throw new NotFoundException('Not Found ProfileImg');
-    }
-
-    const channelData = await this.prisma.channel.findUnique({
-      where: { idx: loginUser.idx },
-    });
-
-    return new ChannelEntity(channelData);
-  }
-
   async updateMyProfileImg(
     userIdx: number,
     file: Express.Multer.File,
@@ -106,6 +92,8 @@ export class ChannelService {
     if (!channelData) {
       throw new NotFoundException('Not Found Video');
     }
+
+    console.log(new ChannelEntity(channelData));
 
     return new ChannelEntity(channelData);
   }
