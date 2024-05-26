@@ -15,9 +15,15 @@ describe('channelService', () => {
 
     channelService = module.get<ChannelService>(ChannelService);
     prisma = module.get<Prisma>(Prisma);
+
+    jest.useFakeTimers().setSystemTime(new Date('2024-05-05'));
   });
 
-  it('signup', async () => {
+  afterAll(async () => {
+    jest.useRealTimers();
+  });
+
+  it('signup test', async () => {
     const findMock = jest
       .spyOn(prisma.channel, 'findMany')
       .mockResolvedValue([]);
@@ -60,7 +66,7 @@ describe('channelService', () => {
         name: 'name',
         description: null,
         profileImg: '1716621275302.png',
-        createdAt: new Date('2024-05-19 12:16:01'),
+        createdAt: new Date(),
         deletedAt: null,
       });
 
@@ -69,7 +75,7 @@ describe('channelService', () => {
       name: 'name',
       description: null,
       profileImg: '1716621275302.png',
-      createdAt: new Date('2024-05-19T12:16:01'),
+      createdAt: new Date(),
     });
     expect(findMock).toHaveBeenCalledTimes(1);
   });
@@ -83,7 +89,7 @@ describe('channelService', () => {
       name: 'name',
       description: null,
       profileImg: '1716621275302.png',
-      createdAt: new Date('2024-05-19 12:16:01'),
+      createdAt: new Date(),
     });
 
     jest.spyOn(prisma.channel, 'update').mockResolvedValue({
@@ -93,7 +99,7 @@ describe('channelService', () => {
       name: 'name',
       description: null,
       profileImg: file.filename,
-      createdAt: new Date('2024-05-19 12:16:01'),
+      createdAt: new Date(),
       deletedAt: null,
     });
 
@@ -107,5 +113,28 @@ describe('channelService', () => {
       data: { profileImg: file.filename },
     });
     expect(channelService.getChannelByIdx).toHaveBeenCalledWith(userIdx);
+  });
+
+  it('subscribe test', async () => {
+    //구독중이지않은관계를 직접찾아서 넣어야하는가?
+    const userIdx = 6;
+    const channelIdx = 7;
+
+    const findMock = jest
+      .spyOn(channelService, 'getSubscrbeState')
+      .mockResolvedValue(false);
+
+    //반환값이 없는 함수도 mock를 해줘야하는가?
+    const createMock = jest
+      .spyOn(prisma.subscribe, 'create')
+      .mockResolvedValue(undefined);
+
+    await expect(channelService.createSubscribe(userIdx, channelIdx)).resolves
+      .not.toThrow;
+
+    expect(findMock).toHaveBeenCalledTimes(1);
+    expect(createMock).toHaveBeenCalledWith({
+      data: { subscriber: 6, provider: 7 },
+    });
   });
 });
