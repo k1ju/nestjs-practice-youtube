@@ -52,6 +52,11 @@ export class ChannelService {
   }
 
   async createSubscribe(userIdx: number, channelIdx: number): Promise<void> {
+    const subscribeState = await this.getSubscrbeState(userIdx, channelIdx);
+    if (subscribeState) {
+      throw new ConflictException('already in subscribe');
+    }
+
     await this.prisma.subscribe.create({
       data: { subscriber: userIdx, provider: channelIdx },
     });
@@ -61,6 +66,11 @@ export class ChannelService {
     userIdx: number,
     channelIdx: number,
   ): Promise<void> {
+    const subscribeState = await this.getSubscrbeState(userIdx, channelIdx);
+    if (!subscribeState) {
+      throw new ConflictException('Already not subscribe');
+    }
+
     await this.prisma.subscribe.deleteMany({
       where: { subscriber: userIdx, provider: channelIdx },
     });
@@ -92,8 +102,6 @@ export class ChannelService {
     if (!channelData) {
       throw new NotFoundException('Not Found Video');
     }
-
-    console.log(new ChannelEntity(channelData));
 
     return new ChannelEntity(channelData);
   }

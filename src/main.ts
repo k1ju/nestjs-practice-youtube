@@ -6,9 +6,8 @@ import { ErrorFilter } from './exception/error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalFilters(new ErrorFilter());
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -17,7 +16,6 @@ async function bootstrap() {
   );
 
   app.enableCors();
-
   await app.listen(3000);
 }
 bootstrap();
