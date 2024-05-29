@@ -24,13 +24,30 @@ import { GetUser } from 'src/auth/get-user.decorator';
 import { LoginUser } from 'src/auth/model/login-user.model';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/configs/multerOption';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('channel')
 @Controller('channel')
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
   //회원가입
   @Post()
+  @ApiOperation({ summary: '회원가입' })
+  @ApiBody({ type: SignUpDto })
+  @ApiCreatedResponse({ description: 'created id' })
+  @ApiConflictResponse({ description: 'id duplicate' })
   async signUp(
     @Body(ValidationPipe) signUpDto: SignUpDto,
   ): Promise<ChannelEntity> {
@@ -39,6 +56,9 @@ export class ChannelController {
 
   //내정보보기
   @Get()
+  @ApiOperation({ summary: 'get myinfo' })
+  @ApiOkResponse({ description: 'ok' })
+  @ApiNotFoundResponse({ status: 404, description: ' not found idx' })
   @UseGuards(AuthGuard)
   async getMyInfo(@GetUser() loginUser: LoginUser) {
     return await this.channelService.getChannelByIdx(loginUser.idx);
@@ -46,6 +66,10 @@ export class ChannelController {
 
   //프로필이미지 수정하기
   @Put('/profile-img')
+  @ApiOperation({ summary: 'change profileImg' })
+  @ApiBadRequestResponse({ description: 'no image file' })
+  @ApiNotFoundResponse({ description: 'not found profileImg' })
+  @ApiOkResponse({ description: 'ok', type: 'cat' })
   @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @UseInterceptors(FileInterceptor('file', multerOptions))
@@ -61,6 +85,11 @@ export class ChannelController {
 
   //구독하기
   @Post(':channelIdx/subscribe')
+  @ApiOperation({ summary: 'subscribe' })
+  @ApiParam({ name: 'channelIdx' })
+  @ApiBadRequestResponse({ description: 'no channelIdx' })
+  @ApiConflictResponse({ description: 'already subscribe' })
+  @ApiOkResponse()
   @UseGuards(AuthGuard)
   async createSubscribe(
     @GetUser() loginUser: LoginUser,
@@ -71,6 +100,11 @@ export class ChannelController {
 
   //구독취소하기
   @Delete(':channelIdx/subscribe')
+  @ApiOperation({ summary: 'delete subscribe' })
+  @ApiParam({ name: 'channelIdx' })
+  @ApiBadRequestResponse({ description: 'no channelIdx' })
+  @ApiConflictResponse({ description: 'already not subscribe' })
+  @ApiOkResponse({ description: 'ok' })
   @UseGuards(AuthGuard)
   async deleteSubscribe(
     @GetUser() loginUser: LoginUser,
@@ -84,6 +118,10 @@ export class ChannelController {
 
   //내구독목록 보기
   @Get(':channelIdx/subscribe/all')
+  @ApiOperation({ summary: 'get all my subscribe list' })
+  @ApiParam({ name: 'channelIdx' })
+  @ApiBadRequestResponse({ description: 'no channelIdx' })
+  @ApiOkResponse({ description: 'ok' })
   @UseGuards(AuthGuard)
   async getMySubscribeAll(
     @GetUser() loginUser: LoginUser,
@@ -93,6 +131,11 @@ export class ChannelController {
 
   //채널상세보기
   @Get(':channelIdx')
+  @ApiOperation({ summary: 'get channel in detail' })
+  @ApiParam({ name: 'channelIdx' })
+  @ApiBadRequestResponse({ description: 'no channelIdx' })
+  @ApiNotFoundResponse({ description: 'not found channel' })
+  @ApiOkResponse({ description: 'ok' })
   @UseGuards(AuthGuard)
   async getChannelInfo(
     @GetUser() loginUser: LoginUser,
