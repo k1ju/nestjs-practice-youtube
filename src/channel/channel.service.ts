@@ -100,7 +100,7 @@ export class ChannelService {
     });
 
     if (!channelData) {
-      throw new NotFoundException('Not Found Video');
+      throw new NotFoundException('Not Found channel');
     }
 
     return new ChannelEntity(channelData);
