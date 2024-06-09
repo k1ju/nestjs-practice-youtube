@@ -1,9 +1,7 @@
+import { Prisma } from '../prisma/prisma.service';
 import { LoginDto } from './dto/LoginDto';
 import { Test } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { Prisma } from 'src/prisma/prisma.service';
-import { channel } from 'diagnostics_channel';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
