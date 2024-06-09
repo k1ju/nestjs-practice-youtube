@@ -2,6 +2,8 @@ import { ChannelService } from './channel.service';
 import { Test } from '@nestjs/testing';
 import { Prisma } from '../prisma/prisma.service';
 import { INestApplication } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
+import { SignUpDto } from './dto/SignUpDto';
 
 describe('channelService', () => {
   let app: INestApplication;
@@ -24,11 +26,13 @@ describe('channelService', () => {
   });
 
   it('signup test', async () => {
-    const findMock = jest
-      .spyOn(prisma.channel, 'findMany')
-      .mockResolvedValue([]);
+    const signUpDto: SignUpDto = {
+      id: 'abc123',
+      pw: 'asdfasdf',
+      name: 'thisisname',
+    };
 
-    const createMock = jest.spyOn(prisma.channel, 'create').mockResolvedValue({
+    const mockChannel = {
       idx: 1,
       id: 'abc123',
       pw: 'asdfasdf',
@@ -37,23 +41,32 @@ describe('channelService', () => {
       deletedAt: null,
       description: null,
       createdAt: new Date(),
-    });
+    };
 
-    await expect(
-      channelService.signUp({
-        id: 'abc123',
-        pw: 'asdfasdf',
-        name: 'thisisname',
-      }),
-    ).resolves.toEqual({
-      idx: 1,
-      name: 'thisisname',
-      description: null,
-      profileImg: null,
-      createdAt: new Date(),
-    });
+    const findMock = jest
+      .spyOn(prisma.channel, 'findMany')
+      .mockResolvedValue([]);
+
+    jest
+      .spyOn(bcrypt, 'hash')
+      .mockImplementation(() => Promise.resolve('mockHashedPw'));
+
+    const createMock = jest
+      .spyOn(prisma.channel, 'create')
+      .mockResolvedValue(mockChannel);
+
+    const result = await channelService.signUp(signUpDto);
+
+    await expect(result).resolves.toEqual(mockChannel);
     expect(findMock).toHaveBeenCalledTimes(1);
+    expect(findMock).toHaveBeenCalledWith({
+      where: { id: signUpDto.id },
+    });
+    expect(bcrypt.hash).toHaveBeenCalledWith(signUpDto.pw, 7);
     expect(createMock).toHaveBeenCalledTimes(1);
+    expect(createMock).toHaveBeenCalledWith({
+      data: { id: signUpDto.id, pw: 'mockHashedPw', name: signUpDto.name },
+    });
   });
 
   it('getmyinfo test', async () => {

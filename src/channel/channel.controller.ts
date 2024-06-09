@@ -53,7 +53,7 @@ export class ChannelController {
   ): Promise<ChannelEntity> {
     return await this.channelService.signUp(signUpDto);
   }
-
+  ㅋ;
   //내정보보기
   @Get()
   @ApiOperation({ summary: 'get myinfo' })

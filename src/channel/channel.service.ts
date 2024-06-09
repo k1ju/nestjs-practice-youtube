@@ -22,7 +22,7 @@ export class ChannelService {
       throw new ConflictException('id duplicated');
     }
 
-    const hashedPassword = await bcrypt.hash(signUpDto.pw, 15);
+    const hashedPassword = await bcrypt.hash(signUpDto.pw, 7);
 
     const channelData = await this.prisma.channel.create({
       data: { id: signUpDto.id, pw: hashedPassword, name: signUpDto.name },
