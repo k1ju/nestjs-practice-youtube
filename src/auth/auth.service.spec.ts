@@ -4,22 +4,25 @@ import { Test } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { BcryptService } from './bcrypt.service';
 
 describe('auth service', () => {
   //로그인 테스트코드 작성
 
   let authService: AuthService;
   let jwtService: JwtService;
+  let bcryptService: BcryptService;
   let prisma: Prisma;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [AuthService, JwtService, Prisma],
+      providers: [AuthService, JwtService, Prisma, BcryptService],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
     prisma = module.get<Prisma>(Prisma);
     jwtService = module.get<JwtService>(JwtService);
+    bcryptService = module.get<BcryptService>(BcryptService);
   });
 
   it('sign in', async () => {
@@ -43,9 +46,9 @@ describe('auth service', () => {
       .spyOn(prisma.channel, 'findFirst')
       .mockResolvedValue(mockChannel);
 
-    jest
-      .spyOn(bcrypt, 'compare')
-      .mockImplementation(() => Promise.resolve(true));
+    const compareMock = jest
+      .spyOn(bcryptService, 'compare')
+      .mockResolvedValue(true);
 
     const signMock = jest
       .spyOn(jwtService, 'signAsync')
@@ -56,7 +59,7 @@ describe('auth service', () => {
     expect(result).resolves.toEqual({ accessToken: 'mockedToken' });
     expect(findMock).toHaveBeenCalledTimes(1);
     expect(findMock).toHaveBeenCalledWith({ where: { id: loginDto.id } });
-    expect(bcrypt.compare).toHaveBeenCalledWith(loginDto.pw, mockChannel.pw);
+    expect(compareMock).toHaveBeenCalledWith(loginDto.pw, mockChannel.pw);
     expect(signMock).toHaveBeenCalledWith({ idx: mockChannel.idx });
   });
 });

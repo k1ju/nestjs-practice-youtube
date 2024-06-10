@@ -4,10 +4,12 @@ import { Prisma } from '../prisma/prisma.service';
 import { INestApplication } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { SignUpDto } from './dto/SignUpDto';
+import { BcryptService } from 'src/auth/bcrypt.service';
 
 describe('channelService', () => {
   let app: INestApplication;
   let channelService: ChannelService;
+  let bcryptService: BcryptService;
   let prisma: Prisma;
 
   beforeEach(async () => {
@@ -17,6 +19,7 @@ describe('channelService', () => {
 
     channelService = module.get<ChannelService>(ChannelService);
     prisma = module.get<Prisma>(Prisma);
+    bcryptService = module.get<BcryptService>(BcryptService);
 
     jest.useFakeTimers().setSystemTime(new Date('2024-05-05'));
   });
@@ -47,6 +50,8 @@ describe('channelService', () => {
       .spyOn(prisma.channel, 'findMany')
       .mockResolvedValue([]);
 
+    // 비크립트와 같이 외부라이브러리 함수를 테스트 코드에서 이용할때, 별도의 서비스 클래스로 만든뒤에 주입받아서 사용한다
+    // 그래야지 원본 함수를 건드리지않고, 별도의 객체내의 함수로 만들어서 모킹할 수 있다.
     jest
       .spyOn(bcrypt, 'hash')
       .mockImplementation(() => Promise.resolve('mockHashedPw'));

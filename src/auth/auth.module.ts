@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
 import { ChannelModule } from 'src/channel/channel.module';
 import { jwtConstants } from './constants';
+import { BcryptService } from './bcrypt.service';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { jwtConstants } from './constants';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: 12 * 3600 },
     }),
+    BcryptService,
   ],
   controllers: [AuthController],
   providers: [AuthService],
