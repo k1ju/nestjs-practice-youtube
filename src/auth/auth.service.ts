@@ -1,3 +1,4 @@
+import { BcryptService } from './bcrypt.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/LoginDto';
 import { Prisma } from 'src/prisma/prisma.service';
@@ -5,12 +6,14 @@ import { JwtService } from '@nestjs/jwt';
 import { ChannelEntity } from 'src/channel/ChannelEntity';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: Prisma,
     private readonly jwtService: JwtService,
+    private readonly bcryptService: BcryptService,
   ) {}
 
   async signIn(loginDto: LoginDto): Promise<{ accessToken: string }> {
@@ -22,7 +25,7 @@ export class AuthService {
       throw new UnauthorizedException('login failed');
     }
 
-    if (!(await bcrypt.compare(loginDto.pw, channel.pw))) {
+    if (!(await this.bcryptService.compare(loginDto.pw, channel.pw))) {
       throw new UnauthorizedException('login failed');
     }
 
