@@ -8,43 +8,43 @@ datasource db {
 }
 
 model Channel {
-  idx         Int         @id @default(autoincrement())
-  id          String      @unique @db.VarChar
-  pw          String      @db.VarChar
-  name        String      @db.VarChar
-  description String?     @db.VarChar
-  profileImg  String?     @db.VarChar @map("profile_img")
-  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt   DateTime?   @map("deleted_at") @db.Timestamptz(6)
+  idx         Int       @id @default(autoincrement())
+  id          String    @unique @db.VarChar
+  pw          String    @db.VarChar
+  name        String    @db.VarChar
+  description String?   @db.VarChar
+  profileImg  String?   @map("profile_img") @db.VarChar
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
 
-  Provider    Subscribe[] @relation("subscribe_providerTochannel")
-  Subscriber  Subscribe[] @relation("subscribe_subscriberTochannel")
-  Video       Video[]
+  provider   Subscribe[] @relation("subscribe_providerTochannel")
+  subscriber Subscribe[] @relation("subscribe_subscriberTochannel")
+  video      Video[]
 
   @@map("channel_tb")
 }
 
 model Subscribe {
-  subscriber        Int
-  provider          Int
+  subscriber Int
+  provider   Int
 
-  Provider   Channel @relation("subscribe_providerTochannel", fields: [provider], references: [idx], onDelete: NoAction, onUpdate: NoAction)
-  Subscriber Channel @relation("subscribe_subscriberTochannel", fields: [subscriber], references: [idx], onDelete: NoAction, onUpdate: NoAction)
+  provider   Channel @relation("subscribe_providerTochannel", fields: [provider], references: [idx], onDelete: NoAction, onUpdate: NoAction)
+  subscriber Channel @relation("subscribe_subscriberTochannel", fields: [subscriber], references: [idx], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([subscriber, provider], map: "subscribe_pk")
   @@map("subscribe_tb")
 }
 
 model Video {
-  idx           Int       @id @default(autoincrement())
-  channelIdx    Int       @map("channel_idx")
-  title         String    @db.VarChar
-  content       String    @db.VarChar
-  thumbnailImg  String?   @db.VarChar @map("thumbnail_img")
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt     DateTime? @map("deleted_at") @db.Timestamptz(6)
+  idx          Int       @id @default(autoincrement())
+  channelIdx   Int       @map("channel_idx")
+  title        String    @db.VarChar
+  content      String    @db.VarChar
+  thumbnailImg String?   @map("thumbnail_img") @db.VarChar
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
 
-  Channel       Channel   @relation(fields: [channelIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "video_channel_fkey")
+  channel Channel @relation(fields: [channelIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "video_channel_fkey")
 
   @@map("video_tb")
 }
